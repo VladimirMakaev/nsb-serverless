@@ -1,0 +1,2 @@
+Start-Process -FilePath "powershell" -ArgumentList "-Command dotnet lambda package -NoProfile -NoLogo" -WorkingDirectory "../src/Lambda1" -NoNewWindow
+Start-Process -FilePath "powershell" -ArgumentList "-Command dotnet lambda package -NoProfile -NoLogo" -WorkingDirectory "../src/Lambda2" -NoNewWindow

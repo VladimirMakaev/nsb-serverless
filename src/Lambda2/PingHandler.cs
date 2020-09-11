@@ -1,0 +1,16 @@
+﻿using System;
+using System.Threading.Tasks;
+using Messages;
+using NServiceBus;
+
+namespace Lambda2
+{
+    public class PingHandler : IHandleMessages<Ping>
+    {
+        public Task Handle(Ping message, IMessageHandlerContext context)
+        {
+            Console.WriteLine($"Ping {message.Counter}");
+            return context.Send(new Pong {Counter = message.Counter + 1});
+        }
+    }
+}
