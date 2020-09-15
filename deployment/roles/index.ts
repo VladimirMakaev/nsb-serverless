@@ -20,6 +20,28 @@ export function createRole() {
         }
     })
 
+
+    const snsPolicy = new aws.iam.RolePolicy("POC.LambdaSnsPolicy", {
+        role: role.id,
+        policy: {
+            Version: "2012-10-17",
+            Statement: [
+                {
+                    Effect: "Allow",
+                    Action: [
+                        "sns:ListTopics",
+                        "sns:Unsubscribe",
+                        "sns:SetEndpointAttributes",
+                        "sns:ListSubscriptions",
+                        "sns:GetSubscriptionAttributes",
+                        "sns:SetSubscriptionAttributes"
+                    ],
+                    Resource: "arn:aws:sns:*:*:*"
+                }
+            ]
+        }
+    })
+
     const sqsPolicy = new aws.iam.RolePolicy("POC.LambdaSqsPolicy", {
         role: role.id,
         policy: {
@@ -29,7 +51,17 @@ export function createRole() {
                     Effect: "Allow",
                     Action: [
                         "sqs:SendMessage",
-                        "sqs:ReceiveMessage"
+                        "sqs:SendMessageBatch",
+                        "sqs:ReceiveMessage",
+                        "sqs:ReceiveMessageBatch",
+                        "sqs:DeleteMessage",
+                        "sqs:DeleteMessageBatch",
+                        "sqs:GetQueueUrl",
+                        "sqs:SetQueueAttributes",
+                        "sqs:GetQueueAttributes",
+                        "sqs:ChangeMessageVisibility",
+                        "sqs:ChangeMessageVisibilityBatch",
+                        "sqs:PurgeQueue"
                     ],
                     Resource: "arn:aws:sqs:*:*:*"
                 }

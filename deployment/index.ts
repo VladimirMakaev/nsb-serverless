@@ -14,7 +14,9 @@ const queue1 = createQueue("Lambda1");
 const queue2 = createQueue("Lambda2");
 const errorQueue = createQueue("ErrorQueue");
 
-const lambda1 = new aws.lambda.Function("lambda-1", {
+const defaultSize = 256;
+
+const lambda1 = new aws.lambda.Function("Lambda-1", {
     runtime: "dotnetcore3.1",
     code: new FileArchive("../src/Lambda1/bin/Release/netcoreapp3.1/Lambda1.zip"),
     role: role.arn,
@@ -25,11 +27,12 @@ const lambda1 = new aws.lambda.Function("lambda-1", {
             "Var1": "100"
         }
     },
-    memorySize: 128
+    memorySize: defaultSize,
+    name: "Lambda-1"
 });
 
 
-const lambda2 = new aws.lambda.Function("lambda-2", {
+const lambda2 = new aws.lambda.Function("Lambda-2", {
     runtime: "dotnetcore3.1",
     code: new FileArchive("../src/Lambda2/bin/Release/netcoreapp3.1/Lambda2.zip"),
     role: role.arn,
@@ -40,5 +43,36 @@ const lambda2 = new aws.lambda.Function("lambda-2", {
             "Var1": "100"
         }
     },
-    memorySize: 128
+    memorySize: 128,
+    name: "Lambda-2"
+});
+
+
+const trigger1 = new aws.lambda.EventSourceMapping("trigger1", {
+    eventSourceArn: queue1.arn,
+    functionName: lambda1.arn,
+    enabled: true,
+}, { deleteBeforeReplace: true });
+
+
+const trigger2 = new aws.lambda.EventSourceMapping("trigger2", {
+    eventSourceArn: queue2.arn,
+    functionName: lambda2.arn,
+    enabled: true,
+}, { deleteBeforeReplace: true });
+
+
+const lambda3 = new aws.lambda.Function("Publisher", {
+    runtime: "dotnetcore3.1",
+    code: new FileArchive("../src/Publisher/bin/Release/netcoreapp3.1/Publisher.zip"),
+    role: role.arn,
+    timeout: 20,
+    handler: "Publisher::Publisher.Function::FunctionHandler",
+    environment: {
+        variables: {
+            "Var1": "100"
+        }
+    },
+    memorySize: 128,
+    name: "Publisher"
 });
